@@ -1,0 +1,6 @@
+﻿  functions.cpp
+d:\documents\visual studio 2015\projects\lgcnsproblem4\lgcnsproblem4\functions.cpp(80): warning C4018: '<': signed/unsigned mismatch
+d:\documents\visual studio 2015\projects\lgcnsproblem4\lgcnsproblem4\functions.cpp(99): warning C4018: '<': signed/unsigned mismatch
+d:\documents\visual studio 2015\projects\lgcnsproblem4\lgcnsproblem4\functions.cpp(178): warning C4172: returning address of local variable or temporary: i
+  LGCNSProblem4.vcxproj -> d:\documents\visual studio 2015\Projects\LGCNSProblem4\Debug\LGCNSProblem4.exe
+  LGCNSProblem4.vcxproj -> d:\documents\visual studio 2015\Projects\LGCNSProblem4\Debug\LGCNSProblem4.pdb (Full PDB)
