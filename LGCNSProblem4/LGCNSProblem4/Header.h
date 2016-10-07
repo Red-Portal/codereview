@@ -19,11 +19,10 @@ private:
 	const bool m_falseForFloorTrueForCeiling;
 public:
 	Point* findConvexPoint(int) const;
-	CaveBorder(std::vector<int*>&&, bool);
-	CaveBorder(std::vector<int*>&, bool);
+	CaveBorder(std::vector<int*>, bool);
 	bool TrueisConvexFalseIsConcave(Point*, Point*, Point*, bool) const;
 	~CaveBorder();
 	void initializer(void);
 };
-double calculatePathLength(std::vector<std::shared_ptr<Point>>&&, const CaveBorder*);
+double calculatePathLength(std::vector<std::shared_ptr<Point>>, const CaveBorder*);
 #endif

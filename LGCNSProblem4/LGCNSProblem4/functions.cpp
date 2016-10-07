@@ -1,44 +1,42 @@
 #include "Header.h"
 #include <cmath>
-#include <vector>
 #include <memory>
 
 double searchShortestPath(std::vector<int*> curvePoints)
 {
 	long double pathLength;
+	std::vector<Point> path;
+	std::vector<int> curveXPos;
 	std::vector<std::shared_ptr<Point>> convexPoints;
-	
-	int&& temp = curvePoints.size();
-	int *curveXPos = new int[temp];
-	for (int i = 0; i < temp; i++)
-		curveXPos[i] = (*curvePoints.at(i));
-	
-	CaveBorder ceiling(curvePoints, true);
-	CaveBorder floor(std::move(curvePoints), false);
 
-	for(int i = 0; i<temp; i++)
+	for (auto i : curvePoints)
+		curveXPos.push_back(*i);
+
+	CaveBorder ceiling(curvePoints, true);
+	CaveBorder floor(curvePoints, false);
+
+	for(auto i : curveXPos)
 	{
-		if (ceiling.findConvexPoint(curveXPos[i]) != nullptr)
+		if (ceiling.findConvexPoint(i) != nullptr)
 		{
-			Point temp(*ceiling.findConvexPoint(curveXPos[i]));
+			Point temp(*ceiling.findConvexPoint(i));
 			auto onCeiling = std::make_shared<Point>(temp);
 			convexPoints.push_back(onCeiling);
 		}
-		else if (floor.findConvexPoint(curveXPos[i]) != nullptr)
+		else if (floor.findConvexPoint(i) != nullptr)
 		{
-			Point temp(*floor.findConvexPoint(curveXPos[i]));
+			Point temp(*floor.findConvexPoint(i));
 			auto onFloor = std::make_shared<Point>(temp);
 			convexPoints.push_back(onFloor);
 		}
 	}
 
-	pathLength = calculatePathLength(std::move(convexPoints), &ceiling);
+	pathLength = calculatePathLength(convexPoints, &ceiling);
 
-	delete[] curveXPos;
 	convexPoints.clear();
 	return pathLength;
 }
-double calculatePathLength(std::vector<std::shared_ptr<Point>>&& convexPoints, const CaveBorder* ceiling)
+double calculatePathLength(std::vector<std::shared_ptr<Point>> convexPoints, const CaveBorder* ceiling)
 {
 	long double path;
 	std::shared_ptr<Point> beginPoint;
@@ -83,62 +81,53 @@ double calculatePathLength(std::vector<std::shared_ptr<Point>>&& convexPoints, c
 	}
 	return path;
 }
-CaveBorder::CaveBorder(std::vector<int*>&& curvePoints, bool falseForFloorTrueForCeiling)
-	: m_curvePoints(std::move(curvePoints)), m_falseForFloorTrueForCeiling(falseForFloorTrueForCeiling) 
+CaveBorder::CaveBorder(std::vector<int*> curvePoints, bool falseForFloorTrueForCeiling)
+	: m_curvePoints(curvePoints), m_falseForFloorTrueForCeiling(falseForFloorTrueForCeiling)
 {//the code below is for saving convex down/up points on each border
 	initializer();
 }
-CaveBorder::CaveBorder(std::vector<int*>& curvePoints, bool falseForFloorTrueForCeiling)
-	: m_curvePoints(std::move(curvePoints)), m_falseForFloorTrueForCeiling(falseForFloorTrueForCeiling)
-{	initializer(); }
 void CaveBorder::initializer()
 {
-	auto point_a = std::make_unique<Point>(0, 0);
-	auto point_b = std::make_unique<Point>(0, 0);
-	auto point_c = std::make_unique<Point>(0, 0);
 	for (int i = 1; i < m_curvePoints.size()-1; i++)
 	{
-		if (m_falseForFloorTrueForCeiling)
-		{
-			point_a->x = *(m_curvePoints.at(i - 1));
-			point_a->y = *(m_curvePoints.at(i - 1) + 2);
-			point_b->x = *(m_curvePoints.at(i + 1));
-			point_b->y = *(m_curvePoints.at(i + 1) + 2);
-			point_c->x = *(m_curvePoints.at(i));
-			point_c->y = *(m_curvePoints.at(i) + 2);
-		}
-		else
-		{
-			point_a->x = *(m_curvePoints.at(i - 1));
-			point_a->y = *(m_curvePoints.at(i - 1) + 1);
-			point_b->x = *(m_curvePoints.at(i + 1));
-			point_b->y = *(m_curvePoints.at(i + 1) + 1);
-			point_c->x = *(m_curvePoints.at(i));
-			point_c->y = *(m_curvePoints.at(i) + 1);
-		}
+		std::unique_ptr<Point> point_a;
+		std::unique_ptr<Point> point_b;
+		std::unique_ptr<Point> point_c;
+			if (m_falseForFloorTrueForCeiling)
+			{
+				point_a = std::make_unique<Point>(*(m_curvePoints.at(i - 1)), *(m_curvePoints.at(i - 1) + 2));
+				point_b = std::make_unique<Point>(*(m_curvePoints.at(i + 1)), *(m_curvePoints.at(i + 1) + 2));
+				point_c = std::make_unique<Point>(*(m_curvePoints.at(i)), *(m_curvePoints.at(i) + 2));
+			}
+			else
+			{
+				point_a = std::make_unique<Point>(*(m_curvePoints.at(i - 1)), *(m_curvePoints.at(i - 1) + 1));
+				point_b = std::make_unique<Point>(*(m_curvePoints.at(i + 1)), *(m_curvePoints.at(i + 1) + 1));
+				point_c = std::make_unique<Point>(*(m_curvePoints.at(i)), *(m_curvePoints.at(i) + 1));
+			}
 
 
 		if (i == m_curvePoints.size() - 2)
 		{
 			if (TrueisConvexFalseIsConcave(point_a.get(), point_c.get(), point_b.get(), m_falseForFloorTrueForCeiling))
 			{
-				m_convexPoints.push_back(std::move(Point(*point_c)));
+				m_convexPoints.push_back(Point(*point_c));
 				break;
 			}
 			else
-				m_convexPoints.push_back(std::move(Point(*point_b))); //if the previous point of end() is concave, then end is convex
+				m_convexPoints.push_back(Point(*point_b)); //if the previous point of end() is concave, then end is convex
 		}
 		else if (i == 1)
 		{
-			if (TrueisConvexFalseIsConcave(point_a.get(), point_c.get(), point_b.get(), m_falseForFloorTrueForCeiling))
-				m_convexPoints.push_back(std::move(Point(*point_c)));
+			if (TrueisConvexFalseIsConcave(point_a.get() , point_c.get() , point_b.get() , m_falseForFloorTrueForCeiling))
+				m_convexPoints.push_back(Point(*point_c));
 			else
-				m_convexPoints.push_back(std::move(Point(*point_a)));
+				m_convexPoints.push_back(Point(*point_a));
 		}
 		else
 		{
 			if (TrueisConvexFalseIsConcave(point_a.get() , point_c.get() , point_b.get() , m_falseForFloorTrueForCeiling))
-				m_convexPoints.push_back(std::move(Point(*point_c)));
+				m_convexPoints.push_back(Point(*point_c));
 		}
 	}
 }
