@@ -5,19 +5,19 @@
 double searchShortestPath(std::vector<int*> curvePoints)
 {
 	long double pathLength;
-	std::vector<Point> path;
+	std::vector<Point> path; //the resulting points forming the shortest path
 	std::vector<int> curveXPos;
 	std::vector<std::shared_ptr<Point>> convexPoints;
 
 	for (auto i : curvePoints)
 		curveXPos.push_back(*i);
 
-	CaveBorder ceiling(curvePoints, true);
+	CaveBorder ceiling(curvePoints, true); //make the ceiling and floor object
 	CaveBorder floor(curvePoints, false);
 
 	for(auto i : curveXPos)
-	{
-		if (ceiling.findConvexPoint(i) != nullptr)
+	{ ///////////// THIS PORTION MIXES ALL THE CONVEX POINTS OF THE CEILING AND FLOOR //////////////
+		if (ceiling.findConvexPoint(i) != nullptr) //if the convex point belongs to 
 		{
 			Point temp(*ceiling.findConvexPoint(i));
 			auto onCeiling = std::make_shared<Point>(temp);
@@ -42,6 +42,7 @@ double calculatePathLength(std::vector<std::shared_ptr<Point>> convexPoints, con
 	std::shared_ptr<Point> beginPoint;
 	std::shared_ptr<Point> endPoint;
 
+	////////// THIS PORTION IS THE ALGORITHM SETTING THE STARTING POINT AND ENDING POINT //////////////////
 	if (ceiling->findConvexPoint(convexPoints[0]->x) == nullptr) // the first convex point is not on the ceiling
 	{
 		if (convexPoints[1]->y > convexPoints[0]->y) //if the next convex point is higher than the first,
@@ -71,6 +72,7 @@ double calculatePathLength(std::vector<std::shared_ptr<Point>> convexPoints, con
 		else
 			endPoint = convexPoints.back();
 	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	path = sqrt(pow(beginPoint->x - convexPoints[1]->x, 2.0) + pow(beginPoint->y - convexPoints[1]->y, 2.0));
 	path += sqrt(pow(endPoint->x - convexPoints[convexPoints.size() - 2]->x, 2.0) + pow(endPoint->y - convexPoints[convexPoints.size() - 2]->y, 2.0));
@@ -86,7 +88,7 @@ CaveBorder::CaveBorder(std::vector<int*> curvePoints, bool falseForFloorTrueForC
 {//the code below is for saving convex down/up points on each border
 	initializer();
 }
-void CaveBorder::initializer()
+void CaveBorder::initializer() //Evaluating convex points
 {
 	for (int i = 1; i < m_curvePoints.size()-1; i++)
 	{
@@ -141,7 +143,8 @@ bool CaveBorder::TrueisConvexFalseIsConcave (Point* a, Point* c, Point* b, bool 
 	delta_x = b->x - a->x;
 	delta_y = b->y - a->y;
 	slope = (double) delta_y / delta_x;
-	height = a->y - slope*a->x;
+	height = a->y - slope*a->x; // getting the slope and height of the graph that point a, point b form
+							 // if point_c is higher or lower that the f(x_of_point_c) then it is convex/concave
 
 	if (trueIsCeilingFalseInFloor)
 	{

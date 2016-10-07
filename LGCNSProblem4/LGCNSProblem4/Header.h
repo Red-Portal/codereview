@@ -7,7 +7,7 @@ double searchShortestPath(std::vector<int*>);
 class Point
 {
 public:
-	int x;
+	int x; //I was too lazy to implement the 'get-set' stuff
 	int y;
 	Point(int, int);
 };
@@ -18,11 +18,11 @@ private:
 	std::vector<Point> m_convexPoints;
 	const bool m_falseForFloorTrueForCeiling;
 public:
-	Point* findConvexPoint(int) const;
+	Point* findConvexPoint(int) const; //iterate through the convex points
 	CaveBorder(std::vector<int*>, bool);
-	bool TrueisConvexFalseIsConcave(Point*, Point*, Point*, bool) const;
+	bool TrueisConvexFalseIsConcave(Point*, Point*, Point*, bool) const;  //determine the convexity of a point c relative to point a and b
 	~CaveBorder();
-	void initializer(void);
+	void initializer(void); //using 'TrueisConvexFalseIsConcave', the initializer initialize the convex points
 };
-double calculatePathLength(std::vector<std::shared_ptr<Point>>, const CaveBorder*);
+double calculatePathLength(std::vector<std::shared_ptr<Point>>, const CaveBorder*); //calculate the resulting path length
 #endif
