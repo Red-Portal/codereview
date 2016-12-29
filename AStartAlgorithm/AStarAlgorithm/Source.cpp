@@ -20,22 +20,15 @@ but for now at least is works.
 
 std::pair<int, int> boardSize;
 class Node;
-class mypair_comp
-{
-public:
-	bool operator()(std::pair<int, double> const& lhs, std::pair<int, double> const& rhs) const
-	{
-		return lhs.second > rhs.second;
-	}
-};
+class mypair_comp;
 inline int index(int, int);
 inline int index(std::pair<int, int>);
 inline auto inverseIndex(int)->std::pair<int, int>;
 auto makeGraph(const std::vector<char>&)->std::unordered_map<int, std::unique_ptr<Node>>;
 auto astarAlgorithm(std::unordered_map<int, std::unique_ptr<Node>>&&, std::pair<int, int>, std::pair<int, int>)
--> std::unordered_map<int, std::pair<int, int>>;
-auto convertMapToList(std::unordered_map<int, std::pair<int, int>>&, std::pair<int, int>, std::pair<int,int>)
-	->std::list<std::pair<int, int>>;
+->std::unordered_map<int, std::pair<int, int>>;
+auto convertMapToList(std::unordered_map<int, std::pair<int, int>>&, std::pair<int, int>, std::pair<int, int>)
+->std::list<std::pair<int, int>>;
 int heuristic(std::pair<int, int>, std::pair<int, int>);
 
 int main()
@@ -52,7 +45,7 @@ int main()
 	for (int j = 0; j<boardSize.first; ++j)
 	{
 		std::string input;
-			//scanf("%s", &board[index(i, j)]);
+		//scanf("%s", &board[index(i, j)]);
 		std::cin >> input;
 
 		for (int i = 0; i < boardSize.second; ++i)
@@ -69,6 +62,14 @@ int main()
 
 	return 0;
 }
+class mypair_comp
+{
+public:
+	bool operator()(std::pair<int, double> const& lhs, std::pair<int, double> const& rhs) const
+	{
+		return lhs.second > rhs.second;
+	}
+};
 inline int index(int x, int y)
 {
 	return x + y*boardSize.first;
@@ -136,7 +137,7 @@ auto astarAlgorithm(std::unordered_map<int, std::unique_ptr<Node>>&& graph, std:
 {
 	std::unordered_map<int, double> costAccumulative;
 	std::unordered_map<int, bool> discoveredMaps;
-	std::unordered_map<int, std::pair<int,int>> path;
+	std::unordered_map<int, std::pair<int, int>> path;
 
 	costAccumulative[index(start)] = 0;
 
@@ -158,7 +159,7 @@ auto astarAlgorithm(std::unordered_map<int, std::unique_ptr<Node>>&& graph, std:
 				continue;
 
 			double cost = costAccumulative[indexCurrent] + 1;
-			if (costAccumulative.find(index(neighbor)) == costAccumulative.end()  || cost < costAccumulative[index(neighbor)])
+			if (costAccumulative.find(index(neighbor)) == costAccumulative.end() || cost < costAccumulative[index(neighbor)])
 			{
 				costAccumulative[index(neighbor)] = cost;
 				queue.push(std::make_pair<int, double>(index(neighbor), cost + heuristic(neighbor, end)));
@@ -169,19 +170,19 @@ auto astarAlgorithm(std::unordered_map<int, std::unique_ptr<Node>>&& graph, std:
 	return path;
 }
 
-auto convertMapToList(std::unordered_map<int, std::pair<int, int>>& map, std::pair<int, int> start, std::pair<int,int> end)
+auto convertMapToList(std::unordered_map<int, std::pair<int, int>>& map, std::pair<int, int> start, std::pair<int, int> end)
 -> std::list<std::pair<int, int>>
 {
 	std::list<std::pair<int, int>> list;
 	int endIndex = index(end);
 
 	list.push_back(end);
-	for(int i = index(end); map[i] != start; i = index(map[i]))
+	for (int i = index(end); map[i] != start; i = index(map[i]))
 	{
 		auto currentPoint = map[i];
 		if (index(currentPoint) == endIndex)
 			break;
-		
+
 		list.emplace_front(currentPoint);
 	}
 	list.emplace_front(start);
