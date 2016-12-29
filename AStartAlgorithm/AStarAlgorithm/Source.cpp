@@ -1,13 +1,13 @@
 #include <utility>
 #include <queue>
 #include <vector>
+#include <list>
 #include <unordered_map>
 #include <cstdio>
 #include <string>
 #include <cmath>
 #include <memory>
 #include <iostream>
-
 
 /*
 this is an implementation of A* algorithm for the problem  "Pac-Man Astar"
@@ -31,7 +31,7 @@ auto convertMapToList(std::unordered_map<int, std::pair<int, int>>&, std::pair<i
 ->std::list<std::pair<int, int>>;
 int heuristic(std::pair<int, int>, std::pair<int, int>);
 
-int main()
+int main(void)
 {
 	std::pair<int, int> start;
 	std::pair<int, int> end;
@@ -56,7 +56,7 @@ int main()
 	auto&& path = astarAlgorithm(std::move(graph), start, end);
 	auto&& result = convertMapToList(path, start, end);
 
-	printf("%d\n", result.size());
+	printf("%d\n", result.size() - 1);
 	for (auto&& i : result)
 		printf("%d %d\n", i.second, i.first);
 
